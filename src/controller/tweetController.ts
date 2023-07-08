@@ -3,6 +3,7 @@ import express from "express";
 
 const prisma = new PrismaClient();
 
+
 export const getAllTweets = async (req : express.Request, res : express.Response) => {
     
     const allTweets = await prisma.tweet.findMany({ include :
@@ -26,14 +27,15 @@ export const getAllTweets = async (req : express.Request, res : express.Response
 
 export const postTweet = async (req : express.Request, res : express.Response) => {
 
-    const {content,image,userId} = req.body;
-    
+    const {content,image} = req.body;
+    const userId = req.body.user.id;
+
     try{
         const newTweet = await prisma.tweet.create({
             data : {
                 content,
                 image,
-                userId // Change to do based on JWT
+                userId 
             }
         });
         res.json(newTweet); 

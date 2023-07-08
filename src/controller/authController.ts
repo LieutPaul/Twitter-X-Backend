@@ -16,9 +16,8 @@ function generateRandomEmailToken() {
 }
 
 function generateJWT(tokenId : number) : string {
-    const jwtPayload = {tokenId};
-    return jwt.sign(jwtPayload, JWT_SECRET ,{algorithm:"HS256",noTimestamp:true});
-
+    const jwtInfo = {tokenId};
+    return jwt.sign(jwtInfo, JWT_SECRET ,{algorithm:"HS256",noTimestamp:true});
 }
 
 // Generates A user if doesn't exist
