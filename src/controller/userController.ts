@@ -1,12 +1,9 @@
-import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
+import express from "express";
 
-const userRouter = Router();
 const prisma = new PrismaClient();
 
-
-// Adding a User
-userRouter.post("/addUser", async (req,res) => {
+export const addUser = async (req : express.Request, res : express.Response) => {
 
     const {email,name,username} = req.body;
     
@@ -23,32 +20,29 @@ userRouter.post("/addUser", async (req,res) => {
         res.status(400).send("Bad Request. Username/name/email null or already exists.");
     }
     
-});
+};
 
-
-// Getting All Users
-userRouter.get("/", async (req,res) => {
+export const getAllUsers = async (req : express.Request ,res : express.Response) => {
 
     const allUsers = await prisma.user.findMany();
     res.json(allUsers);
 
-})
+};
 
-
-// Getting a User by Id
-userRouter.get("/:id", async (req,res) => {
+export const getUserById = async (req : express.Request,res : express.Response) => {
     
     const {id} = req.params;
-    const user = await prisma.user.findUnique({ where : {id: Number(id)}});
-    // We need to cast id as it is a string when it is extracted from the params
-    res.json(user);
-    // Will return null if the user of that ID does not exist
+    const user = await prisma.user.findUnique({ include: {tweets : true}, where : {id: Number(id)}});
+    // Will return the tweets by that person as well
+    if(user == null){
+        res.status(404).send("User not Found.")
+    }else{
+        res.json(user);
+    }
 
-});
+}
 
-
-// Updating a User
-userRouter.put("/:id", async (req,res) => {
+export const updateUserById = async (req : express.Request,res : express.Response) => {
 
     const {id} = req.params;
     const {bio, name, image} = req.body;
@@ -64,11 +58,9 @@ userRouter.put("/:id", async (req,res) => {
         res.status(400).send("Could not Update.")
     }
 
-});
+}
 
-
-// Deleting a User
-userRouter.delete("/:id", async (req,res) => {
+export const deleteById = async (req : express.Request,res : express.Response) => {
 
     const {id} = req.params;
     
@@ -79,6 +71,4 @@ userRouter.delete("/:id", async (req,res) => {
         res.status(404).send("User to delete not Found");
     }
 
-});
-
-export default userRouter;
+}
