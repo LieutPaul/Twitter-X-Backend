@@ -1,8 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-
 // To init prisma: npx prisma init --datasource-provider sqlite
+
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -18,13 +16,38 @@ model User{
   updatedAt DateTime @updatedAt
 
   email String @unique
-  name String
-  username String @unique
+  name String?
+  username String? @unique
   image String?
   bio String?
   verified Boolean @default(false)
   tweets Tweet[]
+  tokens Token[]
+  
 }
+
+// Token here corresponds to an OTP
+
+model Token{
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  type String // Email / API (JWT)
+  emailToken String? @unique
+
+  valid Boolean @default(true)
+  expiration DateTime
+
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+
+}
+
+// enum TokenType{
+//   EMAIL
+//   API
+// }
 
 model Tweet{
   id Int @id @default(autoincrement())
