@@ -1,28 +1,84 @@
 import { Router } from "express";
+import { PrismaClient } from "@prisma/client";
 
 const userRouter = Router();
+const prisma = new PrismaClient();
 
-userRouter.post("/addUser", (req,res) => {
-    res.send("Creating User");
+
+// Adding a User
+userRouter.post("/addUser", async (req,res) => {
+
+    const {email,name,username} = req.body;
+    
+    try{
+        const newUser = await prisma.user.create({
+            data : {
+                email,
+                name,
+                username
+            }
+        });
+        res.json(newUser); 
+    } catch (e){
+        res.status(400).send("Bad Request. Username/name/email null or already exists.");
+    }
+    
 });
 
-userRouter.get("/", (req,res) => {
-    res.send("Fetching users");
+
+// Getting All Users
+userRouter.get("/", async (req,res) => {
+
+    const allUsers = await prisma.user.findMany();
+    res.json(allUsers);
+
 })
 
-userRouter.get("/:id", (req,res) => {
+
+// Getting a User by Id
+userRouter.get("/:id", async (req,res) => {
+    
     const {id} = req.params;
-    res.send(`Fetching User of id ${id}`);
+    const user = await prisma.user.findUnique({ where : {id: Number(id)}});
+    // We need to cast id as it is a string when it is extracted from the params
+    res.json(user);
+    // Will return null if the user of that ID does not exist
+
 });
 
-userRouter.put("/:id", (req,res) => {
+
+// Updating a User
+userRouter.put("/:id", async (req,res) => {
+
     const {id} = req.params;
-    res.send(`Updating User of id ${id}`);
+    const {bio, name, image} = req.body;
+
+    try{
+        const result = await prisma.user.update({ 
+            where : { id : Number(id)},
+            data : { bio, name, image}
+        });
+        // If any of these fields are null, they will not get updated to null
+        res.json(result);
+    }catch (e){
+        res.status(400).send("Could not Update.")
+    }
+
 });
 
-userRouter.delete("/:id", (req,res) => {
+
+// Deleting a User
+userRouter.delete("/:id", async (req,res) => {
+
     const {id} = req.params;
-    res.send(`Deleting User of id ${id}`);
+    
+    try{
+        const user = await prisma.user.delete({where: {id : Number(id)}});
+        res.status(200).json(user);
+    }catch (e){
+        res.status(404).send("User to delete not Found");
+    }
+
 });
 
 export default userRouter;

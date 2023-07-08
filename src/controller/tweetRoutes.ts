@@ -8,7 +8,7 @@ tweetRouter.post("/postTweet", (req,res) => {
 
 tweetRouter.get("/", (req,res) => {
     res.send("Fetching tweets");
-})
+});
 
 tweetRouter.get("/:id", (req,res) => {
     const {id} = req.params;
