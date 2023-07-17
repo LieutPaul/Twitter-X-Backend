@@ -1,11 +1,21 @@
 import express from "express"
 import { PrismaClient } from "@prisma/client"
 import jwt from 'jsonwebtoken';
+import nodemailer from "nodemailer";
+
 const prisma = new PrismaClient();
 
 const EMAIL_TOKEN_EXPIRATION_TIME = 10; // The email is valid for 10 minutes 
 const JWT_EXPIRATION_DAYS = 30;
-const JWT_SECRET = "Super Secret";
+const JWT_SECRET = process.env.JWT_SECRET || "";
+
+let transporter = nodemailer.createTransport({
+    service:"gmail",
+    auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD
+    }
+});
 
 function generateRandomEmailToken() {
     var randomNumber = '';
@@ -43,10 +53,18 @@ export const handleLoginRequest = async (req: express.Request ,res: express.Resp
                 }
             }
         });
+        
+        await transporter.sendMail({
+            to: email, 
+            subject: "Email Token to Login to Twitter Clone", 
+            html: `The email token to login to the app is : <br>
+                <b>${emailToken}</b>`, 
+        });
 
         res.status(200).send("Sent Email Token");
 
     }catch (e){
+        console.log(e);
         res.status(400).send("Couldn't generate token.")
     }
 

@@ -2,7 +2,7 @@ import express from "express"
 import jwt from 'jsonwebtoken'
 import { PrismaClient } from "@prisma/client";
 
-const JWT_SECRET = "Super Secret";
+const JWT_SECRET = process.env.JWT_SECRET || "";
 const prisma = new PrismaClient();
 
 export const authenticateUser = async (req : express.Request, res : express.Response, next: express.NextFunction) => {
