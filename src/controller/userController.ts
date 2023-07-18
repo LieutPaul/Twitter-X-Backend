@@ -72,3 +72,11 @@ export const deleteById = async (req : express.Request,res : express.Response) =
     }
 
 }
+
+export const getUserByJWT = async(req : express.Request,res : express.Response ) => {
+    try{
+        res.status(200).json(req.body.user.id);
+    }catch (e){
+        res.status(403).send("User Not Found");
+    }
+}

@@ -16,8 +16,12 @@ export const getAllTweets = async (req : express.Request, res : express.Response
                     email : true,
                     username:true
                 }
-            }
-        }
+            },
+            likes : true,
+            retweets:true,
+            comments : true
+        },
+        
     });
     // This will return the tweet along with the user info (from the foreign key constraint)
     // Only the id and username of the user
@@ -44,6 +48,91 @@ export const postTweet = async (req : express.Request, res : express.Response) =
     }
 
 }
+
+export const likeTweet = async (req : express.Request, res : express.Response) => {
+
+    const {userId, tweetId} = req.body;
+    try{
+        if(req.body.user.id == userId){
+            const like = await prisma.like.create({
+                data : {
+                    userId,
+                    tweetId,
+                }
+            });
+            res.json(like); 
+        }else{
+            res.status(400).send("Bad Request.");
+        }
+    } catch (e){
+        res.status(400).send("Bad Request. userId/tweetId does not exist or null body.");
+    }
+}
+
+export const unLikeTweet = async (req : express.Request, res : express.Response) => {
+    
+    const { userId, tweetId } = req.body;
+    try{
+        if(req.body.user.id == userId){
+            await prisma.like.deleteMany({ 
+                where: {
+                    userId: Number(userId),
+                    tweetId: Number(tweetId)
+                }
+            });
+
+            res.status(200).send("Unliked successfully");
+        }else{
+            res.status(400).send("Bad Request.");
+        }
+    } catch (e){
+        res.status(400).send("Bad Request.");
+    }
+
+}
+
+export const reTweet = async (req : express.Request, res : express.Response) => {
+
+    const {userId, tweetId} = req.body;
+    try{
+        if(req.body.user.id == userId){
+            const like = await prisma.retweet.create({
+                data : {
+                    userId,
+                    tweetId,
+                }
+            });
+            res.json(like); 
+        }else{
+            res.status(400).send("Bad Request.");
+        }
+    } catch (e){
+        res.status(400).send("Bad Request. userId/tweetId does not exist or null body.");
+    }
+}
+
+export const unReTweet = async (req : express.Request, res : express.Response) => {
+    
+    const { userId, tweetId } = req.body;
+    try{
+        if(req.body.user.id == userId){
+            await prisma.retweet.deleteMany({ 
+                where: {
+                    userId: Number(userId),
+                    tweetId: Number(tweetId)
+                }
+            });
+
+            res.status(200).send("Unretweeted successfully");
+        }else{
+            res.status(400).send("Bad Request.");
+        }
+    } catch (e){
+        res.status(400).send("Bad Request.");
+    }
+
+}
+
 
 export const getTweetById = async (req : express.Request , res : express.Response) => {
     const {id} = req.params;

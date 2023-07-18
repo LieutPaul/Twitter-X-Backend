@@ -21,12 +21,54 @@ model User{
   image String?
   bio String?
   verified Boolean @default(false)
+  likes Like[]
   tweets Tweet[]
   tokens Token[]
-  
+  comments Comment[]
+  retweets Retweet[]
 }
 
-// Token here corresponds to an OTP
+model Tweet{
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  content String
+  image String?
+  impression Int @default(0)
+
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  likes Like[]
+  retweets Retweet[]
+  comments Comment[]
+}
+
+model Like{
+  id Int @id @default(autoincrement())
+  userId Int
+  tweetId Int
+  user User @relation(fields:[userId], references: [id])
+  tweet Tweet @relation(fields:[tweetId], references: [id])
+}
+
+model Retweet{
+  id Int @id @default(autoincrement())
+  userId Int
+  tweetId Int
+  user User @relation(fields:[userId], references: [id])
+  tweet Tweet @relation(fields:[tweetId], references: [id])
+}
+
+model Comment{
+  id Int @id @default(autoincrement())
+  userId Int
+  tweetId Int
+  user User @relation(fields:[userId], references: [id])
+  tweet Tweet @relation(fields:[tweetId], references: [id])
+}
+
+
 
 model Token{
   id Int @id @default(autoincrement())
@@ -48,20 +90,7 @@ model Token{
 //   EMAIL
 //   API
 // }
-
-model Tweet{
-  id Int @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  content String
-  image String?
-  impression Int @default(0)
-
-  userId Int
-  user User @relation(fields: [userId], references: [id])
-  // This means that userId references User.id
-} 
+ 
 
 // migration : npx prisma migrate dev --name "name_of_migration"
 // visualise database : npx prisma studio 

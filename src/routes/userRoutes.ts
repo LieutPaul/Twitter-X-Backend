@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {addUser, deleteById, getAllUsers, getUserById, updateUserById} from "../controller/userController"
+import {addUser, deleteById, getAllUsers, getUserById, getUserByJWT, updateUserById} from "../controller/userController"
 import { authenticateUser } from "../middlewares/authMiddleware";
 
 const userRouter = Router();
@@ -18,5 +18,8 @@ userRouter.put("/updateById", authenticateUser, updateUserById);
 
 // Deleting a User
 userRouter.delete("/:id", deleteById);
+
+// Getting User details from the jwt
+userRouter.get("/getByJWT",authenticateUser, getUserByJWT);
 
 export default userRouter;
