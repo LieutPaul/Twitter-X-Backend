@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {addUser, deleteById, getAllUsers, getUserById, updateUserById} from "../controller/userController"
+import { authenticateUser } from "../middlewares/authMiddleware";
 
 const userRouter = Router();
 
@@ -10,10 +11,10 @@ userRouter.post("/addUser", addUser);
 userRouter.get("/", getAllUsers)
 
 // Getting a User by Id
-userRouter.get("/:id", getUserById);
+userRouter.get("/getById", authenticateUser, getUserById);
 
 // Updating a User
-userRouter.put("/:id", updateUserById);
+userRouter.put("/updateById", authenticateUser, updateUserById);
 
 // Deleting a User
 userRouter.delete("/:id", deleteById);

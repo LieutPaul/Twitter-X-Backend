@@ -13,6 +13,7 @@ export const getAllTweets = async (req : express.Request, res : express.Response
                     id:true, 
                     name: true,
                     image: true,
+                    email : true,
                     username:true
                 }
             }
@@ -26,7 +27,6 @@ export const getAllTweets = async (req : express.Request, res : express.Response
 }
 
 export const postTweet = async (req : express.Request, res : express.Response) => {
-
     const {content,image} = req.body;
     const userId = req.body.user.id;
 

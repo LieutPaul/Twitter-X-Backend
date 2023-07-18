@@ -31,7 +31,7 @@ export const getAllUsers = async (req : express.Request ,res : express.Response)
 
 export const getUserById = async (req : express.Request,res : express.Response) => {
     
-    const {id} = req.params;
+    const id = req.body.user.id;
     const user = await prisma.user.findUnique({ include: {tweets : true}, where : {id: Number(id)}});
     // Will return the tweets by that person as well
     if(user == null){
@@ -44,7 +44,7 @@ export const getUserById = async (req : express.Request,res : express.Response) 
 
 export const updateUserById = async (req : express.Request,res : express.Response) => {
 
-    const {id} = req.params;
+    const id = req.body.user.id;
     const {bio, name, image} = req.body;
 
     try{
