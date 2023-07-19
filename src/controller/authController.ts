@@ -41,6 +41,7 @@ export const handleLoginRequest = async (req: express.Request ,res: express.Resp
         const emailToken = generateRandomEmailToken();
         const expirationTime = new Date(new Date().getTime() + EMAIL_TOKEN_EXPIRATION_TIME * 60 * 1000);
         const username = email.split("@")[0];
+        const name = email.split("@")[0];
         const createdToken = await prisma.token.create({
             data: {
                 type:"EMAIL", 
@@ -49,7 +50,7 @@ export const handleLoginRequest = async (req: express.Request ,res: express.Resp
                 user: {
                     connectOrCreate : {
                         where: {email},
-                        create : {email,username},
+                        create : {email,username,name},
                     }
                 }
             }

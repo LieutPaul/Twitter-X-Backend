@@ -4,6 +4,34 @@ import express from "express";
 const prisma = new PrismaClient();
 
 
+export const getTweetsByUser = async (req : express.Request, res : express.Response) => {
+    const {userId} = req.body;
+    try{
+        const userTweets = await prisma.tweet.findMany({ 
+            where:{userId : Number(userId)},
+            include :
+            { user: 
+                { select:
+                    {
+                        id:true, 
+                        name: true,
+                        image: true,
+                        email : true,
+                        username:true
+                    }
+                },
+                likes : true,
+                retweets:true,
+                comments : true
+            },
+        });
+        res.json(userTweets);
+    }catch (e){
+        console.log(e);
+        res.status(400).send("Bad Request");
+    }
+}
+
 export const getAllTweets = async (req : express.Request, res : express.Response) => {
     
     const allTweets = await prisma.tweet.findMany({ include :

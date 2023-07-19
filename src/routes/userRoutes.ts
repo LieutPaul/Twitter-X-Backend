@@ -11,7 +11,7 @@ userRouter.post("/addUser", addUser);
 userRouter.get("/", getAllUsers)
 
 // Getting a User by Id
-userRouter.get("/getById", authenticateUser, getUserById);
+userRouter.post("/getById", authenticateUser, getUserById);
 
 // Updating a User
 userRouter.put("/updateById", authenticateUser, updateUserById);
