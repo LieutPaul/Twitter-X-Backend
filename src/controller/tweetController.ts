@@ -32,6 +32,74 @@ export const getTweetsByUser = async (req : express.Request, res : express.Respo
     }
 }
 
+export const getTweetsLikedByUser = async (req : express.Request, res : express.Response) => {
+    
+    const {userId} = req.body;
+    
+    try{
+        const likedTweets = await prisma.like.findMany({
+            where: {
+              userId: userId,
+            },
+            include: {
+              tweet: {include :
+                { user: 
+                    { select:
+                        {
+                            id:true, 
+                            name: true,
+                            image: true,
+                            email : true,
+                            username:true
+                        }
+                    },
+                    likes : true,
+                    retweets:true,
+                    comments : true
+                },},
+            },
+        });
+        res.status(200).json(likedTweets);
+    }catch (e){
+        console.log(e);
+        res.status(400).send("Bad Request");
+    }
+}
+
+export const getTweetsRetweetedByUser = async (req : express.Request, res : express.Response) => {
+    
+    const {userId} = req.body;
+    
+    try{
+        const retweetedTweets = await prisma.retweet.findMany({
+            where: {
+              userId: userId,
+            },
+            include: {
+              tweet: {include :
+                { user: 
+                    { select:
+                        {
+                            id:true, 
+                            name: true,
+                            image: true,
+                            email : true,
+                            username:true
+                        }
+                    },
+                    likes : true,
+                    retweets:true,
+                    comments : true
+                },},
+            },
+        });
+        res.status(200).json(retweetedTweets);
+    }catch (e){
+        console.log(e);
+        res.status(400).send("Bad Request");
+    }
+}
+
 export const getAllTweets = async (req : express.Request, res : express.Response) => {
     
     const allTweets = await prisma.tweet.findMany({ include :

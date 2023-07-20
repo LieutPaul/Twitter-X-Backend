@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { deleteTweetById, getAllTweets, getTweetById, getTweetsByUser, likeTweet, postTweet, reTweet, unLikeTweet, unReTweet, updateTweetById } from "../controller/tweetController";
+import { deleteTweetById, getAllTweets, getTweetById, getTweetsByUser, getTweetsLikedByUser, getTweetsRetweetedByUser, likeTweet, postTweet, reTweet, unLikeTweet, unReTweet, updateTweetById } from "../controller/tweetController";
 
 const tweetRouter = Router();
 
@@ -33,5 +33,11 @@ tweetRouter.post("/unReTweet", unReTweet);
 
 // Getting all tweets by a user
 tweetRouter.post("/getByUser", getTweetsByUser);
+
+// Getting all tweets liked by a user
+tweetRouter.post("/getLikedByUser", getTweetsLikedByUser);
+
+// Getting all tweets retweeted by a user
+tweetRouter.post("/getRetweetedByUser", getTweetsRetweetedByUser);
 
 export default tweetRouter;

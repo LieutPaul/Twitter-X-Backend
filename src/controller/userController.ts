@@ -43,14 +43,14 @@ export const getUserById = async (req : express.Request,res : express.Response) 
 }
 
 export const updateUserById = async (req : express.Request,res : express.Response) => {
-
+    
     const id = req.body.user.id;
-    const {bio, name, image} = req.body;
-
+    const {bio, name, image,username} = req.body;
+    
     try{
         const result = await prisma.user.update({ 
             where : { id : Number(id)},
-            data : { bio, name, image}
+            data : { bio, name, image, username}
         });
         // If any of these fields are null, they will not get updated to null
         res.json(result);
