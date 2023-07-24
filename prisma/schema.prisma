@@ -64,6 +64,7 @@ model Comment{
   id Int @id @default(autoincrement())
   userId Int
   tweetId Int
+  content String
   user User @relation(fields:[userId], references: [id])
   tweet Tweet @relation(fields:[tweetId], references: [id])
 }

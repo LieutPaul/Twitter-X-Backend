@@ -101,7 +101,7 @@ export const getTweetsRetweetedByUser = async (req : express.Request, res : expr
 }
 
 export const getAllTweets = async (req : express.Request, res : express.Response) => {
-    
+
     const allTweets = await prisma.tweet.findMany({ include :
          { user: 
             { select:
@@ -234,18 +234,21 @@ export const getTweetById = async (req : express.Request , res : express.Respons
     const {id} = req.params;
     const tweet = await prisma.tweet.findUnique({ include :
         { user: 
-           { select:
-               {
-                   id:true, 
-                   name: true,
-                   image: true,
-                   username:true
-               }
-           }
-       }, 
-       where : {id: Number(id)}
+            { select:
+                {
+                    id:true, 
+                    name: true,
+                    image: true,
+                    email : true,
+                    username:true
+                }
+            },
+            likes : true,
+            retweets:true,
+            comments : {select:{content:true,user:true}}
+        },
+        where : {id: Number(id)}
     });
-    
     if(tweet == null){
         res.status(404).send("Tweet Not Found.")
     }else{
@@ -277,6 +280,23 @@ export const deleteTweetById = async (req : express.Request , res : express.Resp
         res.status(200).json(tweet);
     }catch (e){
         res.status(404).send("Tweet to delete not Found");
+    }
+
+}
+
+export const addComment = async (req : express.Request , res : express.Response) => {
+    const {userId,tweetId,content} = req.body;
+    try{
+        const comment = await prisma.comment.create({
+            data : {
+                userId : Number(userId),
+                tweetId : Number(tweetId),
+                content
+            }});
+        res.status(200).json(comment);
+    }catch (e){
+        console.log(e);
+        res.status(404).send("Could not add Comment.");
     }
 
 }
