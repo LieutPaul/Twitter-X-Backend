@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {addUser, deleteById, getAllUsers, getUserById, getUserByJWT, updateUserById} from "../controller/userController"
+import {addUser, deleteById, getAllUsers, getUserById, getUserByJWT, getUsersFromSearchString, updateUserById} from "../controller/userController"
 import { authenticateUser } from "../middlewares/authMiddleware";
 
 const userRouter = Router();
@@ -8,7 +8,7 @@ const userRouter = Router();
 userRouter.post("/addUser", addUser);
 
 // Getting All Users
-userRouter.get("/", getAllUsers)
+userRouter.get("/", authenticateUser, getAllUsers)
 
 // Getting a User by Id
 userRouter.post("/getById", authenticateUser, getUserById);
@@ -20,6 +20,9 @@ userRouter.put("/updateById", authenticateUser, updateUserById);
 userRouter.delete("/:id", deleteById);
 
 // Getting User details from the jwt
-userRouter.get("/getByJWT",authenticateUser, getUserByJWT);
+userRouter.get("/getByJWT", authenticateUser, getUserByJWT);
+
+//Getting a user from searched String
+userRouter.post("/userFromSearch", authenticateUser, getUsersFromSearchString)
 
 export default userRouter;

@@ -1,5 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient,User } from "@prisma/client";
 import express from "express";
+import { levenshteinDistance } from "../helper/levenshtein";
+
 
 const prisma = new PrismaClient();
 
@@ -26,6 +28,30 @@ export const getAllUsers = async (req : express.Request ,res : express.Response)
 
     const allUsers = await prisma.user.findMany();
     res.json(allUsers);
+
+};
+
+export const getUsersFromSearchString = async (req: express.Request, res: express.Response) => {
+    
+    interface UserWithLevenshtein extends User {
+        levenshteinDistance: number;
+    }
+    
+    const { searchString } = req.body;
+    const users = await prisma.user.findMany({
+        where: {
+            name: { contains: searchString },
+        },
+    });
+  
+    const usersWithLevenshtein: UserWithLevenshtein[] = users.map((user) => {
+        const nameDistance = levenshteinDistance(searchString, user.name || '');
+        const usernameDistance = levenshteinDistance(searchString, user.username || '');
+        return { ...user, levenshteinDistance: Math.min(nameDistance, usernameDistance) };
+    });
+  
+    usersWithLevenshtein.sort((a, b) => a.levenshteinDistance - b.levenshteinDistance);
+    return res.json(usersWithLevenshtein);
 
 };
 
