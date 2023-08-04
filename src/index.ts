@@ -13,6 +13,8 @@ app.use("/users", userRouter);
 app.use("/tweets", authenticateUser, tweetRouter);
 app.use("/auth", authRouter);
 
-app.listen(8080, () => {
-    console.log("Listening on port 8080.");
+const port = process.env.PORT || 8080
+
+app.listen(port, () => {
+    console.log(`Listening on port ${port}.`);
 });
