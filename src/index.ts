@@ -13,10 +13,6 @@ app.use("/users", userRouter);
 app.use("/tweets", authenticateUser, tweetRouter);
 app.use("/auth", authRouter);
 
-app.get("/", (req,res)=> {
-    res.send("Hello")
-});
-
 const port = process.env.PORT || 8080
 
 app.listen(port, () => {
