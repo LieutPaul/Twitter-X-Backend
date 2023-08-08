@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {addUser, deleteById, getAllUsers, getUserById, getUserByJWT, getUsersFromSearchString, updateUserById} from "../controller/userController"
+import {addUser, deleteById, followUser, getAllUsers, getUserById, getUserByJWT, getUsersFromSearchString, isUserFollowing, unFollowUser, updateUserById} from "../controller/userController"
 import { authenticateUser } from "../middlewares/authMiddleware";
 
 const userRouter = Router();
@@ -24,5 +24,14 @@ userRouter.get("/getByJWT", authenticateUser, getUserByJWT);
 
 //Getting a user from searched String
 userRouter.post("/userFromSearch", authenticateUser, getUsersFromSearchString)
+
+//To follow a user
+userRouter.post("/follow/:id", authenticateUser, followUser)
+
+//To unfollow a user
+userRouter.post("/unfollow/:id", authenticateUser, unFollowUser)
+
+//To check if a user is following an other user
+userRouter.post("/isFollowing/:id", authenticateUser, isUserFollowing)
 
 export default userRouter;

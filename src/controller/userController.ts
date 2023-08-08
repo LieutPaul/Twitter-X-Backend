@@ -106,3 +106,52 @@ export const getUserByJWT = async(req : express.Request,res : express.Response )
         res.status(403).send("User Not Found");
     }
 }
+
+export const followUser = async (req : express.Request, res : express.Response) => {
+    const followerId = req.body.user.id, { id } = req.params;
+    try{
+        await prisma.follow.create({
+            data : {
+                followerId : Number(followerId),
+                followingId : Number(id)
+            }
+        });
+        res.status(200).send("Followed successfully");
+    }catch (e){
+        res.status(400).send("Could Not Find User.")
+    }
+}
+
+export const unFollowUser = async(req : express.Request, res : express.Response) => {
+    const followerId = req.body.user.id, { id } = req.params;
+    try{
+        await prisma.follow.deleteMany({
+            where : {
+                followerId : Number(followerId),
+                followingId : Number(id)
+            }
+        });
+        res.status(200).send("Unfollowed successfully");
+    }catch (e){
+        res.status(400).send("Could Not Find User.")
+    }
+}
+
+export const isUserFollowing = async (req : express.Request, res : express.Response) => {
+    const followerId = req.body.user.id, { id } = req.params;
+    try{
+        const follows = await prisma.follow.findMany({
+            where : {
+                followerId : Number(followerId),
+                followingId : Number(id)
+            }
+        });
+        if (follows.length > 0) {
+            res.status(200).send(true); 
+        } else {
+            res.status(200).send(false); 
+        }
+    }catch (e){
+        res.status(400).send("Could not determine follow status.")
+    }
+}

@@ -21,11 +21,25 @@ model User{
   image String?
   bio String?
   verified Boolean @default(false)
+  
+  followers Follow[] @relation("FollowerUser")
+  following Follow[] @relation("FollowingUser")
+  
   likes Like[]
   tweets Tweet[]
   tokens Token[]
   comments Comment[]
   retweets Retweet[]
+}
+
+model Follow {
+  id Int @id @default(autoincrement())
+
+  follower User @relation("FollowerUser", fields: [followerId], references: [id])
+  followerId Int
+
+  following User @relation("FollowingUser", fields: [followingId], references: [id])
+  followingId Int
 }
 
 model Tweet{
