@@ -30,10 +30,6 @@ function generateJWT(tokenId : number) : string {
     return jwt.sign(jwtInfo, JWT_SECRET ,{algorithm:"HS256",noTimestamp:true});
 }
 
-// Generates A user if doesn't exist
-// Hence can be used for login and signup
-// Generate Email Token and send it to the user's email id
-
 export const handleLoginRequest = async (req: express.Request ,res: express.Response) => {
     
     try{
@@ -103,10 +99,6 @@ export const authenticate = async (req : express.Request, res: express.Response)
         
             res.json(jwtToken);
             // When this jwt is verified, the id of the api key which was used to authorize the user is returned
-        }
-
-        
+        }   
     }
-
-
 }

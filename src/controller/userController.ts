@@ -155,3 +155,69 @@ export const isUserFollowing = async (req : express.Request, res : express.Respo
         res.status(400).send("Could not determine follow status.")
     }
 }
+
+// Get all users followed by a user
+
+export const getFollowings = async (req : express.Request, res : express.Response) => {
+    const { id } = req.params;
+    try{
+        const following = await prisma.follow.findMany({
+            where : {
+                followerId : Number(id)
+            },
+            include:{
+                following : true
+            }
+        });
+        res.status(200).send(following); 
+    }catch (e){
+        res.status(400).send("Could not fetch list of followings")
+    }
+}
+
+// Get all users who follow by a user
+
+export const getFollowers = async (req : express.Request, res : express.Response) => {
+    const { id } = req.params;
+    try{
+        const followers = await prisma.follow.findMany({
+            where : {
+                followingId : Number(id),
+            },
+            include:{
+                follower : true
+            }
+        });
+        res.status(200).send(followers); 
+    }catch (e){
+        res.status(400).send("Could not fetch list of followers")
+    }
+}
+
+export const getFollowingsLength = async (req : express.Request, res : express.Response) => {
+    const { id } = req.params;
+    try{
+        const following = await prisma.follow.findMany({
+            where : {
+                followerId : Number(id)
+            }
+        });
+        res.status(200).send({length: following.length}); 
+    }catch (e){
+        res.status(400).send("Could not fetch length of list of followings")
+    }
+}
+
+export const getFollowersLength = async (req : express.Request, res : express.Response) => {
+    const { id } = req.params;
+    try{
+        const followers = await prisma.follow.findMany({
+            where : {
+                followingId : Number(id),
+            }
+        });
+        res.status(200).send({length: followers.length}); 
+    }catch (e){
+        res.status(400).send("Could not fetch length of list of followers")
+    }
+}

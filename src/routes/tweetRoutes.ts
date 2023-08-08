@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addComment, deleteTweetById, getAllTweets, getTweetById, getTweetsByUser, getTweetsLikedByUser, getTweetsRetweetedByUser, likeTweet, postTweet, reTweet, unLikeTweet, unReTweet, updateTweetById } from "../controller/tweetController";
+import { addComment, deleteTweetById, getAllTweets, getTweetById, getTweetsByUser, getTweetsLikedByUser, getTweetsOfFollowedUsers, getTweetsRetweetedByUser, likeTweet, postTweet, reTweet, unLikeTweet, unReTweet, updateTweetById } from "../controller/tweetController";
 
 const tweetRouter = Router();
 
@@ -40,6 +40,10 @@ tweetRouter.post("/getLikedByUser", getTweetsLikedByUser);
 // Getting all tweets retweeted by a user
 tweetRouter.post("/getRetweetedByUser", getTweetsRetweetedByUser);
 
+// Adding a comment
 tweetRouter.post("/addComment", addComment);
+
+// Getting tweets from all the users followed by current user
+tweetRouter.get("/followed", getTweetsOfFollowedUsers);
 
 export default tweetRouter;

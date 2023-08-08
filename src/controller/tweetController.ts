@@ -300,3 +300,26 @@ export const addComment = async (req : express.Request , res : express.Response)
     }
 
 }
+
+export const getTweetsOfFollowedUsers = async (req : express.Request , res : express.Response) => {
+    const userId = req.body.user.id;
+    try{
+        const tweets = await prisma.follow.findMany({
+            where : {
+                followerId : Number(userId),
+            },
+            
+            include:{
+                following : {
+                    include : {
+                        tweets : true
+                    }
+                }
+            }
+        
+        });
+        res.status(200).send(tweets);
+    }catch (e){
+        res.status(400).send("Could not determine follow status.")
+    }
+}

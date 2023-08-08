@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {addUser, deleteById, followUser, getAllUsers, getUserById, getUserByJWT, getUsersFromSearchString, isUserFollowing, unFollowUser, updateUserById} from "../controller/userController"
+import {addUser, deleteById, followUser, getAllUsers, getFollowers, getFollowersLength, getFollowings, getFollowingsLength, getUserById, getUserByJWT, getUsersFromSearchString, isUserFollowing, unFollowUser, updateUserById} from "../controller/userController"
 import { authenticateUser } from "../middlewares/authMiddleware";
 
 const userRouter = Router();
@@ -33,5 +33,18 @@ userRouter.post("/unfollow/:id", authenticateUser, unFollowUser)
 
 //To check if a user is following an other user
 userRouter.post("/isFollowing/:id", authenticateUser, isUserFollowing)
+
+// Get followers list length of a User
+userRouter.get("/followers/length/:id", authenticateUser, getFollowersLength)
+
+// Get followings list length of a User
+userRouter.get("/followings/length/:id", authenticateUser, getFollowingsLength)
+
+
+// Get all followers of a User
+userRouter.get("/followers/:id", authenticateUser, getFollowers)
+
+// Get all followings of a User
+userRouter.get("/followings/:id", authenticateUser, getFollowings)
 
 export default userRouter;
