@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {addUser, deleteById, followUser, getAllUsers, getFollowers, getFollowersLength, getFollowings, getFollowingsLength, getUserById, getUserByJWT, getUsersFromSearchString, isUserFollowing, unFollowUser, updateUserById} from "../controller/userController"
+import {addUser, deleteById, followUser, getAllUsers, getFollowers, getFollowersLength, getFollowings, getFollowingsLength, getTweetsOfFollowing, getUserById, getUserByJWT, getUsersFromSearchString, isUserFollowing, unFollowUser, updateUserById} from "../controller/userController"
 import { authenticateUser } from "../middlewares/authMiddleware";
 
 const userRouter = Router();
@@ -46,5 +46,8 @@ userRouter.get("/followers/:id", authenticateUser, getFollowers)
 
 // Get all followings of a User
 userRouter.get("/followings/:id", authenticateUser, getFollowings)
+
+// Get tweets of the followings of user
+userRouter.get("/followingsTweets", authenticateUser, getTweetsOfFollowing);
 
 export default userRouter;

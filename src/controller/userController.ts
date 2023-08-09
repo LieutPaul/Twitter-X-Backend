@@ -221,3 +221,43 @@ export const getFollowersLength = async (req : express.Request, res : express.Re
         res.status(400).send("Could not fetch length of list of followers")
     }
 }
+
+
+export const getTweetsOfFollowing = async (req : express.Request, res : express.Response) => {
+    const userId = req.body.user.id;
+    try{
+        const tweets = await prisma.follow.findMany({
+            where : {
+                followerId : Number(userId),
+            },
+            
+            include:{
+                following : {
+                    include : {
+                        tweets : { include :
+                                    { user: 
+                                        { select:
+                                            {
+                                                id:true, 
+                                                name: true,
+                                                image: true,
+                                                email : true,
+                                                username:true
+                                            }
+                                        },
+                                        likes : true,
+                                        retweets:true,
+                                        comments : true
+                            },
+                           
+                        }
+                    }
+                }
+            }
+        
+        });
+        res.status(200).send(tweets);
+    }catch (e){
+        res.status(400).send("Could not determine follow status.")
+    }
+}
