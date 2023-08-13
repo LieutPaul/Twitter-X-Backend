@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({errorFormat: 'minimal'});
 
 
 export const getTweetsByUser = async (req : express.Request, res : express.Response) => {
@@ -299,4 +299,71 @@ export const addComment = async (req : express.Request , res : express.Response)
         res.status(404).send("Could not add Comment.");
     }
 
+}
+
+export const getTweetsOfTrend = async (req : express.Request , res : express.Response) => {
+    const trend = req.query.trend;
+    try{
+        const tweets = await prisma.tweet.findMany({
+            where : 
+                {content: {
+                    contains: `#${trend}`,
+                },
+            },
+            include :
+                { user: 
+                    { select:
+                        {
+                            id:true, 
+                            name: true,
+                            image: true,
+                            email : true,
+                            username:true
+                        }
+                    },
+                    likes : true,
+                    retweets:true,
+                    comments : true
+                },
+        });
+        res.status(200).json(tweets);
+    }catch (e){
+        res.status(400).send("Could not retrieve tweets.")
+    }
+
+}
+
+export const searchHashtags = async (req: express.Request, res: express.Response) => {
+    const searchTrend = req.query.trend as string;
+    const lowercasedSearchTrend = searchTrend.substring(1).toLowerCase();
+    try {
+        const tweets = await prisma.tweet.findMany({
+            where: {
+                content: {
+                    contains: lowercasedSearchTrend
+                }
+            }
+        });
+
+        const hashtags: string[] = [];
+        const hashtagRegex = /#\w+/g;
+
+        tweets.forEach(tweet => {
+            const content = tweet.content;
+            const lowercasedContent = content.toLowerCase();
+            const matches = lowercasedContent.match(hashtagRegex);
+            if (matches) {
+                hashtags.push(...matches);
+            }
+        });
+        const uniqueHashtags: string[] = [];
+        hashtags.forEach(hashtag => {
+            if (!uniqueHashtags.includes(hashtag)) {
+                uniqueHashtags.push(hashtag);
+            }
+        });
+        res.status(200).send(uniqueHashtags);
+    } catch (error) {
+      res.status(500).send('Could not recover hashtags.');
+    }
 }

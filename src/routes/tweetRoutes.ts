@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addComment, deleteTweetById, getAllTweets, getTweetById, getTweetsByUser, getTweetsLikedByUser, getTweetsRetweetedByUser, likeTweet, postTweet, reTweet, unLikeTweet, unReTweet, updateTweetById } from "../controller/tweetController";
+import { addComment, deleteTweetById, getAllTweets, getTweetById, getTweetsByUser, getTweetsLikedByUser, getTweetsOfTrend, getTweetsRetweetedByUser, likeTweet, postTweet, reTweet, searchHashtags, unLikeTweet, unReTweet, updateTweetById } from "../controller/tweetController";
 
 const tweetRouter = Router();
 
@@ -11,7 +11,7 @@ tweetRouter.get("/", getAllTweets);
 tweetRouter.post("/postTweet", postTweet);
 
 // Getting a Tweet By Id
-tweetRouter.get("/:id", getTweetById);
+tweetRouter.get("/tweetFromId/:id", getTweetById);
 
 // Updating a tweet by Id
 // tweetRouter.put("/:id", updateTweetById);
@@ -42,5 +42,11 @@ tweetRouter.post("/getRetweetedByUser", getTweetsRetweetedByUser);
 
 // Adding a comment
 tweetRouter.post("/addComment", addComment);
+
+// Getting all tweets that contain a trend
+tweetRouter.get("/trending", getTweetsOfTrend);
+
+// Getting all tweets that contain a trend
+tweetRouter.get("/trendsFromSearch", searchHashtags);
 
 export default tweetRouter;
