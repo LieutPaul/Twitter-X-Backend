@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {addUser, deleteById, followUser, getAllUsers, getFollowers, getFollowersLength, getFollowings, getFollowingsLength, getTweetsOfFollowing, getUserById, getUserByJWT, getUsersFromSearchString, isUserFollowing, unFollowUser, updateUserById} from "../controller/userController"
+import {addUser, deleteById, findUserByUsername, followUser, getAllUsers, getFollowers, getFollowersLength, getFollowings, getFollowingsLength, getTweetsOfFollowing, getUserById, getUserByJWT, getUsersFromSearchString, getUsersFromUsernameSearchString, isUserFollowing, unFollowUser, updateUserById} from "../controller/userController"
 import { authenticateUser } from "../middlewares/authMiddleware";
 
 const userRouter = Router();
@@ -13,6 +13,9 @@ userRouter.get("/", authenticateUser, getAllUsers)
 // Getting a User by Id
 userRouter.post("/getById", authenticateUser, getUserById);
 
+// Getting a User by Username
+userRouter.post("/getByUsername", authenticateUser, findUserByUsername);
+
 // Updating a User
 userRouter.put("/updateById", authenticateUser, updateUserById);
 
@@ -24,6 +27,9 @@ userRouter.get("/getByJWT", authenticateUser, getUserByJWT);
 
 //Getting a user from searched String
 userRouter.post("/userFromSearch", authenticateUser, getUsersFromSearchString)
+
+//Getting a user from searched String
+userRouter.post("/usernameFromSearch", authenticateUser, getUsersFromUsernameSearchString)
 
 //To follow a user
 userRouter.post("/follow/:id", authenticateUser, followUser)

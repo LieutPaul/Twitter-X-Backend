@@ -55,6 +55,29 @@ export const getUsersFromSearchString = async (req: express.Request, res: expres
 
 };
 
+export const getUsersFromUsernameSearchString = async (req: express.Request, res: express.Response) => {
+    
+    interface UserWithLevenshtein extends User {
+        levenshteinDistance: number;
+    }
+    
+    const { searchString } = req.body;
+    const users = await prisma.user.findMany({
+        where: {
+            username: { contains: searchString },
+        },
+    });
+  
+    const usersWithLevenshtein: UserWithLevenshtein[] = users.map((user) => {
+        const usernameDistance = levenshteinDistance(searchString, user.username || '');
+        return { ...user, levenshteinDistance: usernameDistance };
+    });
+  
+    usersWithLevenshtein.sort((a, b) => a.levenshteinDistance - b.levenshteinDistance);
+    return res.json(usersWithLevenshtein);
+
+};
+
 export const getUserById = async (req : express.Request,res : express.Response) => {
     
     const {id} = req.body
@@ -67,6 +90,26 @@ export const getUserById = async (req : express.Request,res : express.Response) 
     }
 
 }
+
+export const findUserByUsername = async (req: express.Request, res: express.Response) => {
+    const { username } = req.body;
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                username: username
+            },
+        });
+  
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+    
+        return res.status(200).json(user);
+    } catch (error) {
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+
+  }
 
 export const updateUserById = async (req : express.Request,res : express.Response) => {
     
