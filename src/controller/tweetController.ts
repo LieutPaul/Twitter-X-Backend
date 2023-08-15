@@ -20,8 +20,8 @@ export const getTweetsByUser = async (req : express.Request, res : express.Respo
                         username:true
                     }
                 },
-                likes : true,
-                retweets:true,
+                likes : { select : { id : true, userId: true, tweetId : true, user : true } },
+                retweets : { select : { id : true, userId : true, tweetId : true, user : true } },
                 comments : true
             },
         });
@@ -53,8 +53,8 @@ export const getTweetsLikedByUser = async (req : express.Request, res : express.
                             username:true
                         }
                     },
-                    likes : true,
-                    retweets:true,
+                    likes : { select : { id : true, userId: true, tweetId : true, user : true } },
+                    retweets : { select : { id : true, userId : true, tweetId : true, user : true } },
                     comments : true
                 },},
             },
@@ -87,8 +87,8 @@ export const getTweetsRetweetedByUser = async (req : express.Request, res : expr
                             username:true
                         }
                     },
-                    likes : true,
-                    retweets:true,
+                    likes : { select : { id : true, userId: true, tweetId : true, user : true } },
+                    retweets : { select : { id : true, userId : true, tweetId : true, user : true } },
                     comments : true
                 },},
             },
@@ -113,8 +113,8 @@ export const getAllTweets = async (req : express.Request, res : express.Response
                     username:true
                 }
             },
-            likes : true,
-            retweets:true,
+            likes : { select : { id : true, userId: true, tweetId : true, user : true } },
+            retweets : { select : { id : true, userId : true, tweetId : true, user : true } },
             comments : true
         },
         
@@ -243,8 +243,8 @@ export const getTweetById = async (req : express.Request , res : express.Respons
                     username:true
                 }
             },
-            likes : true,
-            retweets:true,
+            likes : { select : { id : true, userId: true, tweetId : true, user : true } },
+            retweets : { select : { id : true, userId : true, tweetId : true, user : true } },
             comments : {select:{content:true,user:true}}
         },
         where : {id: Number(id)}
@@ -321,8 +321,8 @@ export const getTweetsOfTrend = async (req : express.Request , res : express.Res
                             username:true
                         }
                     },
-                    likes : true,
-                    retweets:true,
+                    likes : { select : { id : true, userId: true, tweetId : true, user : true } },
+                    retweets : { select : { id : true, userId : true, tweetId : true, user : true } },
                     comments : true
                 },
         });

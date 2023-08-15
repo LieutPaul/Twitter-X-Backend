@@ -288,8 +288,8 @@ export const getTweetsOfFollowing = async (req : express.Request, res : express.
                                                 username:true
                                             }
                                         },
-                                        likes : true,
-                                        retweets:true,
+                                        likes : { select : { id : true, userId: true, tweetId : true, user : true } },
+                                        retweets : { select : { id : true, userId : true, tweetId : true, user : true } },
                                         comments : true
                             },
                            
