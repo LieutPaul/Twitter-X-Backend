@@ -3,7 +3,6 @@ import express from "express";
 
 const prisma = new PrismaClient({errorFormat: 'minimal'});
 
-
 export const getTweetsByUser = async (req : express.Request, res : express.Response) => {
     const {userId} = req.body;
     try{
@@ -378,6 +377,6 @@ export const searchHashtags = async (req: express.Request, res: express.Response
         console.log(uniqueHashtags);
         res.status(200).send(uniqueHashtags);
     } catch (error) {
-      res.status(500).send('Could not recover hashtags.');
+        res.status(500).send('Could not recover hashtags.');
     }
 }

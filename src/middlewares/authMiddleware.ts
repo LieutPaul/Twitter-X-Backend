@@ -23,6 +23,6 @@ export const authenticateUser = async (req : express.Request, res : express.Resp
         req.body.user = apiToken?.user;
         next();
     }catch(e){
-        return res.status(401).send("Unauthorized");
+        res.status(401).send("Unauthorized");
     }
 }
