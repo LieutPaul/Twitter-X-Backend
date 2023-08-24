@@ -55,7 +55,8 @@ export const getUsersFromSearchString = async (req: express.Request, res: expres
         });
       
         usersWithLevenshtein.sort((a, b) => a.levenshteinDistance - b.levenshteinDistance);
-        return res.json(usersWithLevenshtein);
+        res.json(usersWithLevenshtein);
+        return ;
     }catch (e){
         console.log(e);
         res.status(400).send("Could not get users from search string.")
@@ -84,7 +85,8 @@ export const getUsersFromUsernameSearchString = async (req: express.Request, res
         });
       
         usersWithLevenshtein.sort((a, b) => a.levenshteinDistance - b.levenshteinDistance);
-        return res.json(usersWithLevenshtein);
+        res.json(usersWithLevenshtein);
+        return ;
     }catch (e){
         console.log(e);
         res.status(400).send("Could not get users from search string.")
@@ -119,12 +121,15 @@ export const findUserByUsername = async (req: express.Request, res: express.Resp
         });
   
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+            res.status(404).json({ error: 'User not found' });
+            return ;
         }
     
-        return res.status(200).json(user);
+        res.status(200).json(user);
+        return ;
     } catch (error) {
-        return res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error' });
+        return ;
     }
 
   }

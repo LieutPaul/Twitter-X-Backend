@@ -10,7 +10,8 @@ export const authenticateUser = async (req : express.Request, res : express.Resp
     const userJwt = authHeader?.split(' ')[1];
     
     if(!userJwt){
-        return res.status(401).send("Unauthorized");
+        res.status(401).send("Unauthorized");
+        return ;
     }
     
     try{

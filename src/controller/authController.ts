@@ -83,7 +83,7 @@ export const authenticate = async (req : express.Request, res: express.Response)
             res.status(401).send("Token Expired.");
         }else{
             if(dbEmailToken!.user!.email != email){
-                return res.status(401).send("Could Not Authenticate.");
+                res.status(401).send("Could Not Authenticate.");
             }else{
                 // Valid Token and user combo
                 const apiToken = await prisma.token.create({data:{
