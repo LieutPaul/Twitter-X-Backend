@@ -101,28 +101,33 @@ export const getTweetsRetweetedByUser = async (req : express.Request, res : expr
 }
 
 export const getAllTweets = async (req : express.Request, res : express.Response) => {
-
-    const allTweets = await prisma.tweet.findMany({ include :
-         { user: 
-            { select:
-                {
-                    id:true, 
-                    name: true,
-                    image: true,
-                    email : true,
-                    username:true
-                }
+    
+    try{
+        const allTweets = await prisma.tweet.findMany({ include :
+            { user: 
+                { select:
+                    {
+                        id:true, 
+                        name: true,
+                        image: true,
+                        email : true,
+                        username:true
+                    }
+                },
+                likes : { select : { id : true, userId: true, tweetId : true, user : true } },
+                retweets : { select : { id : true, userId : true, tweetId : true, user : true } },
+                comments : true
             },
-            likes : { select : { id : true, userId: true, tweetId : true, user : true } },
-            retweets : { select : { id : true, userId : true, tweetId : true, user : true } },
-            comments : true
-        },
-        
-    });
-    // This will return the tweet along with the user info (from the foreign key constraint)
-    // Only the id and username of the user
-    // This will avoid making two separate API Requests
-    res.json(allTweets);
+            
+        });
+        // This will return the tweet along with the user info (from the foreign key constraint)
+        // Only the id and username of the user
+        // This will avoid making two separate API Requests
+        res.json(allTweets);
+    } catch(e) {
+        console.log(e);
+        res.status(400).send("Could not fetch all tweets.")
+    }
 
 }
 
@@ -231,28 +236,32 @@ export const unReTweet = async (req : express.Request, res : express.Response) =
 
 
 export const getTweetById = async (req : express.Request , res : express.Response) => {
-    const {id} = req.params;
-    const tweet = await prisma.tweet.findUnique({ include :
-        { user: 
-            { select:
-                {
-                    id:true, 
-                    name: true,
-                    image: true,
-                    email : true,
-                    username:true
-                }
+    try{
+        const {id} = req.params;
+        const tweet = await prisma.tweet.findUnique({ include :
+            { user: 
+                { select:
+                    {
+                        id:true, 
+                        name: true,
+                        image: true,
+                        email : true,
+                        username:true
+                    }
+                },
+                likes : { select : { id : true, userId: true, tweetId : true, user : true } },
+                retweets : { select : { id : true, userId : true, tweetId : true, user : true } },
+                comments : {select:{content:true,user:true}}
             },
-            likes : { select : { id : true, userId: true, tweetId : true, user : true } },
-            retweets : { select : { id : true, userId : true, tweetId : true, user : true } },
-            comments : {select:{content:true,user:true}}
-        },
-        where : {id: Number(id)}
-    });
-    if(tweet == null){
-        res.status(404).send("Tweet Not Found.")
-    }else{
-        res.json(tweet);
+            where : {id: Number(id)}
+        });
+        if(tweet == null){
+            res.status(404).send("Tweet Not Found.")
+        }else{
+            res.json(tweet);
+        }
+    } catch (e){
+        res.status(404).send("Could not fetch tweet.")
     }
 }
 
@@ -335,7 +344,7 @@ export const getTweetsOfTrend = async (req : express.Request , res : express.Res
 
 export const searchHashtags = async (req: express.Request, res: express.Response) => {
     const searchTrend = req.query.trend as string;
-    const lowercasedSearchTrend = searchTrend.substring(1).toLowerCase();
+    const lowercasedSearchTrend = searchTrend.toLowerCase();
     try {
         const tweets = await prisma.tweet.findMany({
             where: {
@@ -353,7 +362,11 @@ export const searchHashtags = async (req: express.Request, res: express.Response
             const lowercasedContent = content.toLowerCase();
             const matches = lowercasedContent.match(hashtagRegex);
             if (matches) {
-                hashtags.push(...matches);
+                for(var i=0;i<matches.length;i++){
+                    if(matches[i].includes(lowercasedSearchTrend)){
+                        hashtags.push(matches[i]);
+                    }
+                }
             }
         });
         const uniqueHashtags: string[] = [];
@@ -362,6 +375,7 @@ export const searchHashtags = async (req: express.Request, res: express.Response
                 uniqueHashtags.push(hashtag);
             }
         });
+        console.log(uniqueHashtags);
         res.status(200).send(uniqueHashtags);
     } catch (error) {
       res.status(500).send('Could not recover hashtags.');

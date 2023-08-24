@@ -72,33 +72,38 @@ export const handleLoginRequest = async (req: express.Request ,res: express.Resp
 // Generate JWT for the current user
 export const authenticate = async (req : express.Request, res: express.Response) => {
     
-    const {email, emailToken} = req.body;
-    const dbEmailToken = await prisma.token.findUnique({where : {emailToken}, include : {user:{select:{email : true}}}});
-    const expirationDate = new Date(new Date().getTime() + JWT_EXPIRATION_DAYS * 24 * 60 * 60 * 1000);
+    try{
+        const {email, emailToken} = req.body;
+        const dbEmailToken = await prisma.token.findUnique({where : {emailToken}, include : {user:{select:{email : true}}}});
+        const expirationDate = new Date(new Date().getTime() + JWT_EXPIRATION_DAYS * 24 * 60 * 60 * 1000);
 
-    if(dbEmailToken == null || !dbEmailToken.valid!){
-        res.status(401).send("Could Not Authenticate.");
-    }else if(dbEmailToken.expiration < new Date()){
-        res.status(401).send("Token Expired.");
-    }else{
-        if(dbEmailToken!.user!.email != email){
-            return res.status(401).send("Could Not Authenticate.");
+        if(dbEmailToken == null || !dbEmailToken.valid!){
+            res.status(401).send("Could Not Authenticate.");
+        }else if(dbEmailToken.expiration < new Date()){
+            res.status(401).send("Token Expired.");
         }else{
-            // Valid Token and user combo
-            const apiToken = await prisma.token.create({data:{
-                type:"API",
-                expiration : expirationDate,
-                user:{connect:{email}}
-            }});
+            if(dbEmailToken!.user!.email != email){
+                return res.status(401).send("Could Not Authenticate.");
+            }else{
+                // Valid Token and user combo
+                const apiToken = await prisma.token.create({data:{
+                    type:"API",
+                    expiration : expirationDate,
+                    user:{connect:{email}}
+                }});
+                
+                // Invalidate the Email token
+                await prisma.token.update({where : {emailToken}, data:{valid : false}});
+                
+                // Generating JWT
+                const jwtToken = generateJWT(apiToken.id);
             
-            // Invalidate the Email token
-            await prisma.token.update({where : {emailToken}, data:{valid : false}});
-            
-            // Generating JWT
-            const jwtToken = generateJWT(apiToken.id);
-        
-            res.json(jwtToken);
-            // When this jwt is verified, the id of the api key which was used to authorize the user is returned
-        }   
+                res.json(jwtToken);
+                // When this jwt is verified, the id of the api key which was used to authorize the user is returned
+            }   
+        }
+    } catch (e) {
+        console.log(e);
+        res.status(400).send("Could not authenticate")
     }
 }

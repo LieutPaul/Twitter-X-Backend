@@ -25,68 +25,86 @@ export const addUser = async (req : express.Request, res : express.Response) => 
 };
 
 export const getAllUsers = async (req : express.Request ,res : express.Response) => {
-
-    const allUsers = await prisma.user.findMany();
-    res.json(allUsers);
+    try{
+        const allUsers = await prisma.user.findMany();
+        res.json(allUsers);
+    } catch (e){
+        console.log(e);
+        res.status(400).send("Could not fetch all users.")
+    }  
 
 };
 
 export const getUsersFromSearchString = async (req: express.Request, res: express.Response) => {
     
-    interface UserWithLevenshtein extends User {
-        levenshteinDistance: number;
+    try{
+        interface UserWithLevenshtein extends User {
+            levenshteinDistance: number;
+        }
+        
+        let { searchString } = req.body;
+        const users = await prisma.user.findMany({
+            where: {
+                name: { contains: searchString },
+            },
+        });
+      
+        const usersWithLevenshtein: UserWithLevenshtein[] = users.map((user) => {
+            const nameDistance = levenshteinDistance(searchString.toLowerCase(), user.name ? user.name.toLowerCase() : '');
+            return { ...user, levenshteinDistance : nameDistance };
+        });
+      
+        usersWithLevenshtein.sort((a, b) => a.levenshteinDistance - b.levenshteinDistance);
+        return res.json(usersWithLevenshtein);
+    }catch (e){
+        console.log(e);
+        res.status(400).send("Could not get users from search string.")
     }
-    
-    const { searchString } = req.body;
-    const users = await prisma.user.findMany({
-        where: {
-            name: { contains: searchString },
-        },
-    });
-  
-    const usersWithLevenshtein: UserWithLevenshtein[] = users.map((user) => {
-        const nameDistance = levenshteinDistance(searchString, user.name || '');
-        const usernameDistance = levenshteinDistance(searchString, user.username || '');
-        return { ...user, levenshteinDistance: Math.min(nameDistance, usernameDistance) };
-    });
-  
-    usersWithLevenshtein.sort((a, b) => a.levenshteinDistance - b.levenshteinDistance);
-    return res.json(usersWithLevenshtein);
+
 
 };
 
 export const getUsersFromUsernameSearchString = async (req: express.Request, res: express.Response) => {
     
-    interface UserWithLevenshtein extends User {
-        levenshteinDistance: number;
+    try{
+        interface UserWithLevenshtein extends User {
+            levenshteinDistance: number;
+        }
+        
+        let { searchString } = req.body;
+        const users = await prisma.user.findMany({
+            where: {
+                username: { contains: searchString },
+            },
+        });
+      
+        const usersWithLevenshtein: UserWithLevenshtein[] = users.map((user) => {
+            const usernameDistance = levenshteinDistance(searchString.toLowerCase(), user.name ? user.name.toLowerCase() : '');
+            return { ...user, levenshteinDistance: usernameDistance };
+        });
+      
+        usersWithLevenshtein.sort((a, b) => a.levenshteinDistance - b.levenshteinDistance);
+        return res.json(usersWithLevenshtein);
+    }catch (e){
+        console.log(e);
+        res.status(400).send("Could not get users from search string.")
     }
-    
-    const { searchString } = req.body;
-    const users = await prisma.user.findMany({
-        where: {
-            username: { contains: searchString },
-        },
-    });
-  
-    const usersWithLevenshtein: UserWithLevenshtein[] = users.map((user) => {
-        const usernameDistance = levenshteinDistance(searchString, user.username || '');
-        return { ...user, levenshteinDistance: usernameDistance };
-    });
-  
-    usersWithLevenshtein.sort((a, b) => a.levenshteinDistance - b.levenshteinDistance);
-    return res.json(usersWithLevenshtein);
 
 };
 
 export const getUserById = async (req : express.Request,res : express.Response) => {
-    
-    const {id} = req.body
-    const user = await prisma.user.findUnique({ include: {tweets : true}, where : {id: Number(id)}});
-    // Will return the tweets by that person as well
-    if(user == null){
-        res.status(404).send("User not Found.")
-    }else{
-        res.json(user);
+    try{
+        const {id} = req.body
+        const user = await prisma.user.findUnique({ include: {tweets : true}, where : {id: Number(id)}});
+        // Will return the tweets by that person as well
+        if(user == null){
+            res.status(404).send("User not Found.")
+        }else{
+            res.json(user);
+        }
+    } catch(e) {
+        console.log(e);
+        res.status(400).send("Could not get user from id.")
     }
 
 }
