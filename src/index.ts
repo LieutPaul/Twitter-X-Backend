@@ -9,7 +9,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-app.use("/users", userRouter);
+app.use("/users", authenticateUser, userRouter);
 app.use("/tweets", authenticateUser, tweetRouter);
 app.use("/auth", authRouter);
 

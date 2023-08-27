@@ -20,6 +20,7 @@ export const authenticateUser = async (req : express.Request, res : express.Resp
         
         if(apiToken == null || apiToken?.valid == false || (apiToken.expiration < new Date()) ){
             res.status(401).send("Unauthorized");
+            return ;
         }
         req.body.user = apiToken?.user;
         next();
