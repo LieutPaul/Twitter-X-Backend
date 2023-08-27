@@ -34,6 +34,16 @@ PUT | /users/updateById | Updates any of the fields from bio, name, username tha
 DELETE | /users/:id | Deletes the user that corresponds to the id passed in the request parameters. |
 GET | /users/getByJWT | Returns the entire user object that corresponds to the user-id from the JWT passed from the frontend. User needs to be authenticated to access this route. |
 POST | /users/userFromSearch | Returns a list of users whose name contains the search string passed in the request body. Sorts the list of users in terms of levenshtien distance between the name of the user and the search string, so that it can be displayed in the same order in the frontend.|
+POST | /users/usernameFromSearch | Returns a list of users whose username contains the search string passed in the request body. Sorts the list of users in terms of levenshtien distance between the name of the user and the search string, so that it can be displayed in the same order in the frontend.|
+POST | /users/follow/:id | Allows a user to follow another user. The following user is taken from the JWT and the user to be followed is taken from request params. |
+POST | /users/unfollow/:id | Allows a user to un-follow another user. The following user is taken from the JWT and the user to be unfollowed is taken from request params. |
+POST | /users/isFollowing/:id | Checks if a user is followed by another user. The following user is taken from the JWT and the user who we want to check is being followed or not is taken from request params. |
+GET | /users/followers/length/:id | Returns the number of users who follow a particular user. The ID of the user is taken from the request params. |
+GET | /users/followings/length/:id | Returns the number of users followed by a particular user. The ID of the user is taken from the request params. |
+GET | /users/followers/:id | Returns the list of users who follow a particular user. The ID of the user is taken from the request params. |
+GET | /users/followings/:id | Returns the list of users that a particular user follows. The ID of the user is taken from the request params. |
+GET | /users/followingsTweets/ | Returns the list of tweets tweeted by all the users that a particular user follows. |
+
 
 - Tweet Routes (All the routes require the user to be authenticated) : 
 
@@ -50,6 +60,8 @@ POST | /tweets/getByUser | The userId is passed in the request body and returns 
 POST | /tweets/getLikedByUser | The userId is passed in the request body and returns all the tweets liked by that user. |
 POST | /tweets/getRetweetedByUser | The userId is passed in the request body and returns all the tweets retweeted by that user. |
 POST | /tweets/addComment | The userId, tweetId, comment-content is passed in the request body and adds a comment by that user for that tweet with the given content. |
+GET | /tweets/trending | Fetches all the tweets that contain a particlaur trend(#). The trend is taken as a request parameter. |
+GET | /tweets/trendsFromSearch | Fetches all the tweets where the trends in the tweet contain a particular trend as a substring. The substring-trend is taken as a request parameter. |
 
 - Auth routes : 
 
